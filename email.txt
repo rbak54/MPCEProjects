@@ -1,0 +1,8 @@
+
+Read the 'Overview of the Sens_Spec mini project_2021.docx' first.
+The excel doc has the raw data.
+The Zapala and Lightfoot papers are the studies you are trying to reproduce.
+The how to read a paper pdf is a photocopy of chapter from a book that I feel details describes sensitivity and specificity well.
+I have attached some slides on the caloric test plus the British Society of Audiology's recommended procedure for Caloric testing.
+
+To perform the analysis use what ever tool your comfortable with e.g. excel, matlab.
