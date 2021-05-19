@@ -178,8 +178,24 @@ pred_cut<-ifelse(predicted_prob>0.5,1,0)
 classDF<-data.frame(response=data_mod$overall_significance,predicted=pred_cut)
 xtabs(~predicted+response,data=classDF)
 
-return(list(sens_spec_dataset,g))
+return(list(sens_spec_dataset,g,summary(a)))
 #how to get from predicted_prob to  cut off monothermal screen cut off
 }
 
-likelihood_ratio_dataset(data_mod)
+res_a=likelihood_ratio_dataset(data_mod)
+res_a[[2]]
+res_a[[3]]
+
+
+data_mod_c<-data_raw[which(data_raw$Order=="C"),]
+res_c=likelihood_ratio_dataset(data_mod_c)
+res_c[[2]]
+res_c[[3]]
+
+
+data_mod_w<-data_raw[which(data_raw$Order=="W"),]
+res_w=likelihood_ratio_dataset(data_mod_w)
+res_w[[2]]
+res_w[[3]]
+#warm seems to have a stronger effect, it also has a lower AIC (better) 
+#REALLY NEED TO VALIDATE THIS MODEL
