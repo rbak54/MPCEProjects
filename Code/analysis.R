@@ -107,7 +107,7 @@ sig_range=seq(from=min_sig,to=max_sig,length.out=100)
 sig_range=round(sig_range, 0)
 
 #make new dataset to match the number of values we're using
-sens_spec_dataset<-data.frame(matrix(nrow=(length(sig_range)),ncol=5))
+sens_spec_dataset<-data.frame(matrix(nrow=(length(sig_range)),ncol=6))
 colnames(sens_spec_dataset)=c("significance","sensitivity","specificity","reliability_pos","reliability_neg","accuracy")
 
 #first column in dataset is the significance value
@@ -191,6 +191,7 @@ return(list(sens_spec_dataset,g,summary(a),roc_obj))
 }
 
 res_a=likelihood_ratio_dataset(data_mod)
+all_dataset<-res_a[[1]]
 res_a[[2]]
 res_a[[3]]
 res_a[[4]]
@@ -207,3 +208,15 @@ res_w[[2]]
 res_w[[3]]
 #warm seems to have a stronger effect, it also has a lower AIC (better) 
 #REALLY NEED TO VALIDATE THIS MODEL
+
+
+pairs(~accuracy+reliability_pos+reliability_neg+sensitivity+specificity, data=all_dataset)
+
+
+##if aim is high sensitivity and positive reliability
+g<-ggplot(data=all_dataset,aes(x=reliability_pos,y=sensitivity))+xlim(c(0,1))+
+  geom_text(label=all_dataset$significance,nudge_x = 0.05, nudge_y = 0.05, check_overlap = T)+
+  geom_point()+theme_bw()
+g<-g+geom_hline(yintercept = 0.9)
+g
+
