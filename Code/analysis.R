@@ -24,7 +24,11 @@ get_spec_sens<-function(data_mod,significance){
   specificity<-sum(data_mod$rating=="TN",na.rm = T)/(sum(data_mod$rating=="TN",na.rm = T)+sum(data_mod$rating=="FP",na.rm = T))
   #return sensitivity and specificity
   #we don't return the dataset because we don't need the modified dataset anymore
-  return(c(sensitivity,specificity))
+  reliability_pos<-sum(data_mod$rating=="TP",na.rm = T)/(sum(data_mod$rating=="TP",na.rm = T)+sum(data_mod$rating=="FP",na.rm = T))
+  reliability_neg<-sum(data_mod$rating=="TN",na.rm = T)/(sum(data_mod$rating=="TN",na.rm = T)+sum(data_mod$rating=="FN",na.rm = T))
+  accuracy<-(sum(data_mod$rating=="TP",na.rm = T)+sum(data_mod$rating=="TN",na.rm = T))/(sum(data_mod$rating=="TP",na.rm = T)+sum(data_mod$rating=="TN",na.rm = T)+sum(data_mod$rating=="FP",na.rm = T)+sum(data_mod$rating=="FN",na.rm = T))
+
+  return(c(sensitivity,specificity,reliability_pos,reliability_neg,accuracy))
 }
 ##read in data
 
@@ -103,8 +107,8 @@ sig_range=seq(from=min_sig,to=max_sig,length.out=100)
 sig_range=round(sig_range, 0)
 
 #make new dataset to match the number of values we're using
-sens_spec_dataset<-data.frame(matrix(nrow=(length(sig_range)),ncol=3))
-colnames(sens_spec_dataset)=c("significance","sensitivity","specificity")
+sens_spec_dataset<-data.frame(matrix(nrow=(length(sig_range)),ncol=5))
+colnames(sens_spec_dataset)=c("significance","sensitivity","specificity","reliability_pos","reliability_neg","accuracy")
 
 #first column in dataset is the significance value
 sens_spec_dataset[,1]<-sig_range
@@ -117,7 +121,11 @@ for (i in 1:length(sig_range)){
   sens_spec_dataset[i,2]<-res[1]
   #store specificity in dataset
   sens_spec_dataset[i,3]<-res[2]
-}
+  sens_spec_dataset[i,4]<-res[3]
+  sens_spec_dataset[i,5]<-res[4]
+  sens_spec_dataset[i,6]<-res[5]
+  
+  }
 
 #false positive rate is 1 - specificity
 sens_spec_dataset$false_pos_rate<- 1 - sens_spec_dataset$specificity
@@ -178,14 +186,14 @@ pred_cut<-ifelse(predicted_prob>0.5,1,0)
 classDF<-data.frame(response=data_mod$overall_significance,predicted=pred_cut)
 xtabs(~predicted+response,data=classDF)
 
-return(list(sens_spec_dataset,g,summary(a)))
+return(list(sens_spec_dataset,g,summary(a),roc_obj))
 #how to get from predicted_prob to  cut off monothermal screen cut off
 }
 
 res_a=likelihood_ratio_dataset(data_mod)
 res_a[[2]]
 res_a[[3]]
-
+res_a[[4]]
 
 data_mod_c<-data_raw[which(data_raw$Order=="C"),]
 res_c=likelihood_ratio_dataset(data_mod_c)
